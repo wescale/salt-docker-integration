@@ -20,3 +20,7 @@ redis-server:
     - watch:
         - pkg: redis-server
         - file: /etc/redis.conf
+
+  pip.installed:
+    - name: redis
+

@@ -31,7 +31,7 @@ class TestDockerRoles(object):
         :return:
         """
         root_dir = ROLES_DIRECTORY
-        if os.environ.has_key('ROLES'):
+        if 'ROLES' in os.environ:
             dirs = filter(os.path.isdir, [os.path.join(root_dir, f) for f in os.environ['ROLES'].split(',')])
         else:
             dirs = filter(os.path.isdir, [os.path.join(root_dir, f) for f in os.listdir(root_dir) if f != 'files'])
@@ -179,7 +179,7 @@ def exec_role(role_dir):
         # Ping salt minion in container before applying highstate
         for i in range(0, 10):
             out, err, returncode = exec_shell(
-                'docker exec -i {master_id} salt "{minion_id}" -t 30 test.ping --output yaml 2>&1'.format(
+                'docker exec -i {master_id} salt "{minion_id}" -t 30 test.ping --output yaml'.format(
                     master_id=master_id, minion_id=minion_id))
             ping_result = out
             if 'true' in out:
@@ -190,7 +190,7 @@ def exec_role(role_dir):
         # Refresh states
         out, err, returncode = exec_shell(
             'docker exec -i {master_id} salt "{minion_id}" saltutil.sync_all --force-color'
-            ' --state-output=mixed 2>&1'
+            ' --state-output=mixed'
             .format(master_id=master_id, minion_id=minion_id))
 
         assert_true(returncode == 0, "Sync all execution should return code 0")
@@ -198,7 +198,7 @@ def exec_role(role_dir):
         # Refresh pillars
         out, err, returncode = exec_shell(
             'docker exec -i {master_id} salt "{minion_id}" saltutil.pillar_refresh --force-color'
-            ' --state-output=mixed 2>&1'
+            ' --state-output=mixed'
             .format(master_id=master_id, minion_id=minion_id))
 
         assert_true(returncode == 0, "Pillar refresh execution should return code 0")
@@ -206,19 +206,21 @@ def exec_role(role_dir):
         # Apply highstate to the container
         out, err, returncode = exec_shell(
             'docker exec -i {master_id} salt "{minion_id}" -t 30 state.highstate --force-color'
-            ' --state-output=mixed 2>&1'
+            ' --state-output=mixed'
             .format(master_id=master_id, minion_id=minion_id), log=True)
 
         assert_true(returncode == 0, role_dir + " Highstate execution should return code 0")
         validate_salt(out)
 
-        # Apply asserts.sls to ensure role does work as expected
-        out, err, returncode = exec_shell(
-            'docker exec -i {master_id} salt "{minion_id}" -t 30 state.sls test.{role}.asserts'
-            ' --force-color --state-output=mixed 2>&1'
-            .format(master_id=master_id, minion_id=minion_id, role=role_dir), log=True)
-        assert_true(returncode == 0, role_dir + " asserts.sls execution should return code 0")
-        validate_salt(out)
+        # Only apply asserts.sls when it is present
+        if os.path.isfile("{roles_dir}/{role}/asserts.sls".format(roles_dir=ROLES_DIRECTORY, role=role_dir)):
+            # Apply asserts.sls to ensure role does work as expected
+            out, err, returncode = exec_shell(
+                'docker exec -i {master_id} salt "{minion_id}" -t 30 state.sls test.{role}.asserts'
+                ' --force-color --state-output=mixed'
+                .format(master_id=master_id, minion_id=minion_id, role=role_dir), log=True)
+            assert_true(returncode == 0, role_dir + " asserts.sls execution should return code 0")
+            validate_salt(out)
     finally:
         tear_down(minion_id)
         kill_master(master_id)

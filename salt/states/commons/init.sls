@@ -10,3 +10,7 @@ selinux-policy-devel:
 
 lsof:
   pkg.latest
+
+python-pip:
+  pkg.installed
+
