@@ -1,0 +1,12 @@
+{% set default_settings = {
+    'redis': {
+        'bind': '127.0.0.1',
+        'database_count': 16,
+        'port': 6379,
+        'masterauth': 'r3d1sp@ssw0rd'
+    }
+}%}
+
+
+{# Update settings defaults from pillar data #}
+{% set redis_settings = salt['pillar.get']('redis', default=default_settings.redis) %}

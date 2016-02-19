@@ -1,3 +1,8 @@
+/salt/states/test/*/minion.conf
+/salt/states/test/*/grains
+*.iml
+.venv
+.idea
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
