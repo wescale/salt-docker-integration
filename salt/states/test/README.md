@@ -1,0 +1,1 @@
+Ce répertoire contient les tests de rôle Salt.
