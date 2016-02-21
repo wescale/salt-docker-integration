@@ -1,4 +1,5 @@
-# Carbon daemons pids
+# salt/states/test/redis/asserts.sls
+# Redis server pid
 
 {%- set redis_pid = salt['cmd.run']('pgrep -f redis-server') -%}
 
