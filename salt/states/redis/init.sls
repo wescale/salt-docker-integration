@@ -13,6 +13,9 @@ redis-server:
     - require:
         - pkg: redis-server
 
+  selinux.mode:
+    - name: permissive
+
   service.running:
     - name: redis
     - enable: True
@@ -20,6 +23,7 @@ redis-server:
     - watch:
         - pkg: redis-server
         - file: /etc/redis.conf
+        - selinux: redis-server
 
   pip.installed:
     - name: redis

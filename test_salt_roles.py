@@ -170,7 +170,8 @@ def exec_role(role_dir):
         out, err, returncode = exec_shell('docker run -tid --name="{minion_id}" '
                                           '--privileged -v {role_dir}/minion.conf:/etc/salt/minion.d/minion.conf '
                                           '-v {role_dir}/grains:/etc/salt/grains '
-                                          '-v /sys/fs/cgroup:/sys/fs/cgroup:ro {salt_image}'
+                                          '-v /sys/fs/cgroup:/sys/fs/cgroup:ro '
+                                          '-v /sys/fs/selinux:/sys/fs/selinux {salt_image}'
                                           .format(minion_id=minion_id, role_dir=role_abs_dir,
                                                   salt_image=SALT_MINION_IMAGE))
         assert_true(returncode == 0, "Role container should be spawned without error")
