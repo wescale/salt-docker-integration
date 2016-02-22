@@ -11,7 +11,7 @@ Organisation des sources :
 # Configuration Salt
 
 Salt est configuré pour inclure dans le highstate le state commons.sls et le ou les states correspondant
-au rôles listé dans le grain roles.
+au rôles listés dans le grain roles.
 
 # Exécution locale
 
@@ -39,7 +39,7 @@ $ vagrant up
 Le premier vagrant up prendra un peu de temps car il se charge de provisionner le système et de créer
 les images docker salt-minion et salt-master.
 
-Lancez les test sur la machine vagrant :
+Lancez les tests sur la machine vagrant :
 
 ```shell
 $ vagrant ssh
